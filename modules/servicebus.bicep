@@ -1,6 +1,29 @@
 @description('Azure region where resources should be deployed')
-param location string
+param location string = 'westeurope'
 
+resource servicebus 'Microsoft.ServiceBus/namespaces@2021-11-01' = {
+  name: 'servicebus-${uniqueString(resourceGroup().id)}'
+  location: location
+  sku: {
+    name: 'Basic'
+    tier: 'Basic'
+  }
+
+  resource authorizationRules 'AuthorizationRules@2021-11-01' = {
+    name: 'authorizationRules'
+    properties: {
+      rights: [ 'Manage', 'Listen', 'Send' ]
+    }
+  }
+
+  resource queues 'queues@2021-11-01' = {
+    name: 'victori'
+  }
+
+}
+
+#disable-next-line outputs-should-not-contain-secrets
+output connectionString string = servicebus.listKeys()[0].value
 // TODO: add a resource of type Microsoft.ServiceBus/namespaces
 //       - use the 'Basic' service tier
 

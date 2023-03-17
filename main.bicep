@@ -1,5 +1,5 @@
 @description('Azure region where resources should be deployed')
-param location string
+param location string = 'westeurope'
 
 @description('Timestamp used to uniquely name each module deployment')
 param now string = utcNow()
@@ -44,14 +44,18 @@ module functionApp './modules/function-app.bicep' = {
     // - go through the local.settings.json file in your function app project to see which app settings you need
     // - check ./modules/function-app.bicep to see which app settings are provided automatically for you
     appSettings: [
-      // {
-      //   name: 'EXAMPLE_SETTING_1'
-      //   value: 'example-value-1'
-      // }
-      // {
-      //   name: 'EXAMPLE_SETTING_2'
-      //   value: 'example-value-2'
-      // }
+      {
+        name: 'victorimagestore_CONNECTION_STRING'
+        value: 'DefaultEndpointsProtocol=https;AccountName=victorimagestore;AccountKey=ps8GduCP0v32DpSGjvpV7tDixLVVWkGNskz+I9B1TXEaPXfYZkn0qMJpGgTfJGjZncY4cKH4OuWR+AStChvP/Q==;EndpointSuffix=core.windows.net'
+      }
+      {
+        name: 'victori_servicebus_CONNECTION_STRING'
+        value: 'Endpoint=sb://victori.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=RoqZAz62ydXb52rzCO1LuOqTlK/wYCKEt+ASbPjCcPQ='
+      }
+      {
+        name: 'victoricosmosdb_DOCUMENTDB'
+        value: 'AccountEndpoint=https://victori-cosmosdb.documents.azure.com:443/;AccountKey=Ud5GfXE6RWLiKP0RfA0QGnGLfM1JUF0ve8vUT7OuuEaDozv3ba1dHvUjkfkppG3wr6axGSg5bSNpACDbtcO5gA==;'
+      }
     ]
   }
 }

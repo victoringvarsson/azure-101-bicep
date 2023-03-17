@@ -1,5 +1,5 @@
 @description('Azure region where resources should be deployed')
-param location string
+param location string = 'westeurope'
 
 @description('A serverless Cosmos DB account')
 resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2021-06-15' = {
@@ -21,6 +21,33 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2021-06-15' = {
     ]
   }
 }
+
+resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-11-15' = {
+  name: cosmosAccount.name
+  properties: {
+    resource: {
+      id: 'azure101'
+    }
+  }
+
+  resource container 'containers@2022-11-15' = {
+    name: 'images'
+    properties: {
+      resource: {
+        id: database.id
+        partitionKey: {
+          kind: 'Hash'
+          paths: [
+            'images/${database.id}'
+          ]
+        }
+      }
+    }
+  }
+}
+
+#disable-next-line outputs-should-not-contain-secrets
+output connectionString array = cosmosAccount.listConnectionStrings().connectionStrings
 
 // TODO: add a resource of type Microsoft.DocumentDB/databaseAccounts/sqlDatabases
 //       - make the resource a nested child resource of the cosmos db account resource
